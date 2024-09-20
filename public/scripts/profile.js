@@ -10,33 +10,37 @@ fileUploadIcon.addEventListener('click', function() {
 });
 
 fileInput.addEventListener('change', async function (event) {
+  document.querySelector('.js-uploading-message').classList.remove('hidden')
   const file = event.target.files[0]
 
   if (file) {
     const formData = new FormData()
     formData.append('avatar', file)
 
-    const avatarUploadRequest = await fetch('https://chat-app-remastered.onrender.com/users/me/avatar', {
+    const avatarUploadRequest = await fetch('http://localhost:3000/users/me/avatar', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
       },
       body: formData
     })
-    document.querySelector('.js-uploading-message').classList.remove('hidden')
 
     if (avatarUploadRequest.status === 200) {
-      document.querySelector('.js-uploading-message').classList.remove('hidden')
+      document.querySelector('.js-uploading-message').classList.add('hidden')
       window.location.reload()
     } else {
-      console.log('An error Occured')
+      document.querySelector('.js-uploading-message').classList.add('hidden')
+      document.querySelector('.js-upload-error-message').classList.remove('hidden')
+      setTimeout(() => {
+        document.querySelector('.js-upload-error-message').classList.add('hidden')
+      }, 2000);
     }
     const userAvatar = await avatarUploadRequest.text()
   }
 })
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const request = await fetch('https://chat-app-remastered.onrender.com/users/me', {
+  const request = await fetch('http://localhost:3000/users/me', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -72,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('js-email').innerHTML = response.email;
 
   document.getElementById('js-delete-profile').addEventListener('click', async () => {
-    const userDeleteRequest = await fetch('https://chat-app-remastered.onrender.com/users/me', {
+    const userDeleteRequest = await fetch('http://localhost:3000/users/me', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -100,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const password = document.getElementById('password').value || response.password
 
       try {
-        const updateRequest = await fetch('https://chat-app-remastered.onrender.com/users/me', {
+        const updateRequest = await fetch('http://localhost:3000/users/me', {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',

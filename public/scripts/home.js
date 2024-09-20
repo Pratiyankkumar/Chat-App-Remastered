@@ -4,7 +4,7 @@ import relativeTime from 'https://unpkg.com/dayjs@1.11.13/esm/plugin/relativeTim
 const token = localStorage.getItem('token');
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const request = await fetch('https://chat-app-remastered.onrender.com/users/me', {
+  const request = await fetch('http://localhost:3000/users/me', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.querySelector('.js-logout-button').addEventListener('click', async () => {
-    const logoutRequest = await fetch('https://chat-app-remastered.onrender.com/users/me/logout', {
+    const logoutRequest = await fetch('http://localhost:3000/users/me/logout', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.href = '/profile'
   })
 
-  const usersRequest = await fetch('https://chat-app-remastered.onrender.com/users', {
+  const usersRequest = await fetch('http://localhost:3000/users', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <p class="font-semibold">${user.name}</p>
               <img class="w-3 h-3 ml-4 js-online-tag-${user._id} hidden" src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Location_dot_green.svg"></img>
             </div>
-            <p class="text-sm text-gray-400">${chatContent} · ${findElapsedTime(createdAt) ? `${findElapsedTime(createdAt)} ago` : ''}</p>
+            <p class="text-sm text-gray-400">${chatContent.slice(0, 20)} · ${findElapsedTime(createdAt) ? `${findElapsedTime(createdAt)} ago` : ''}</p>
           </div>
         </div>
       `;
@@ -192,7 +192,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const sortedChatObj = await loadChat(response._id, receiverId)
       const sortedChat = sortedChatObj.sortedChat.reverse();
-      console.log(sortedChat)
 
       let chatContainer = document.querySelector('.js-chat-container');
       chatContainer.innerHTML = ''; // Clear previous messages
@@ -220,6 +219,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       document.querySelector('.js-send-message').addEventListener('click', () => {
+        const timeSended = new Date().toString().replace('GMT+0530 (India Standard Time)', '')
         const message = document.querySelector('.js-message-input').value || '.';
         document.querySelector('.js-send-message').setAttribute('disabled', 'disabled')
 
@@ -231,9 +231,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Optionally add the message to the chat container immediately
         chatContainer.innerHTML += `
           <div class="flex justify-end">
-            <div class="bg-blue-500 rounded-lg p-2 max-w-xs">
-              <p>${message}</p>
-            </div>
+            <div class="bg-gray-700 rounded-lg p-2 max-w-xs flex flex-col items-start">
+                <p>${message}</p>
+                <p class="text-xsm text-gray-300">${timeSended}</p>
+              </div>
           </div>
         `;
 
@@ -243,6 +244,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       document.querySelector('.js-message-input').addEventListener('keydown', (event) => {
+        const timeSended = new Date().toString().replace('GMT+0530 (India Standard Time)', '')
         const message = document.querySelector('.js-message-input').value || '.';
         if (event.key === 'Enter') {
           document.querySelector('.js-send-message').setAttribute('disabled', 'disabled')
@@ -255,8 +257,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           // Optionally add the message to the chat container immediately
           chatContainer.innerHTML += `
             <div class="flex justify-end">
-              <div class="bg-blue-500 rounded-lg p-2 max-w-xs">
+              <div class="bg-gray-700 rounded-lg p-2 max-w-xs flex flex-col items-start">
                 <p>${message}</p>
+                <p class="text-xsm text-gray-300">${timeSended}</p>
               </div>
             </div>
           `;
@@ -265,18 +268,19 @@ document.addEventListener('DOMContentLoaded', async () => {
           document.querySelector('.js-message-input').value = '';
           setTimeout(() => {
             document.querySelector('.js-send-message').removeAttribute('disabled')
-          }, 600);
+          }, 2000);
         }
       })
 
       // Listen for incoming messages
       socket.on('displayMessage', (message) => {
+        const time = new Date().toString().replace('GMT+0530 (India Standard Time)', '')
         if (message.senderId === receiverId || message.receiverId === receiverId) {
           chatContainer.innerHTML += `
             <div class="flex ${message.senderId === response._id ? 'justify-end' : 'justify-start'}">
               <div class="bg-gray-700 rounded-lg p-2 max-w-xs flex flex-col items-start">
                 <p>${message.content}</p>
-                <p class="text-xsm text-gray-300">${findMessageTime(message.createdAt)}</p>
+                <p class="text-xsm text-gray-300">${time}</p>
               </div>
             </div>
           `;
@@ -289,7 +293,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function findUser(userId) {
-  const usersRequest = await fetch(`https://chat-app-remastered.onrender.com/user/${userId}`, {
+  const usersRequest = await fetch(`http://localhost:3000/user/${userId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
@@ -301,7 +305,7 @@ async function findUser(userId) {
 }
 
 async function loadChat(senderId, receiverId) {
-  const senderschatRequest = await fetch(`https://chat-app-remastered.onrender.com/messages/${senderId}/${receiverId}`, {
+  const senderschatRequest = await fetch(`http://localhost:3000/messages/${senderId}/${receiverId}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -309,7 +313,7 @@ async function loadChat(senderId, receiverId) {
     }
   });
 
-  const receiverschatRequest = await fetch(`https://chat-app-remastered.onrender.com/messages/${receiverId}/${senderId}`, {
+  const receiverschatRequest = await fetch(`http://localhost:3000/messages/${receiverId}/${senderId}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,

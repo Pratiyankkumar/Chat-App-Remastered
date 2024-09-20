@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const email  = document.querySelector('#email').value
     const password = document.querySelector('#password').value
 
-    const request = await fetch('https://chat-app-remastered.onrender.com/users', {
+    const request = await fetch('http://localhost:3000/users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
