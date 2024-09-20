@@ -16,7 +16,7 @@ fileInput.addEventListener('change', async function (event) {
     const formData = new FormData()
     formData.append('avatar', file)
 
-    const avatarUploadRequest = await fetch('http://localhost:3000/users/me/avatar', {
+    const avatarUploadRequest = await fetch('https://chat-app-remastered.onrender.com/users/me/avatar', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -36,7 +36,7 @@ fileInput.addEventListener('change', async function (event) {
 })
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const request = await fetch('http://localhost:3000/users/me', {
+  const request = await fetch('https://chat-app-remastered.onrender.com/users/me', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('js-email').innerHTML = response.email;
 
   document.getElementById('js-delete-profile').addEventListener('click', async () => {
-    const userDeleteRequest = await fetch('http://localhost:3000/users/me', {
+    const userDeleteRequest = await fetch('https://chat-app-remastered.onrender.com/users/me', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const password = document.getElementById('password').value || response.password
 
       try {
-        const updateRequest = await fetch('http://localhost:3000/users/me', {
+        const updateRequest = await fetch('https://chat-app-remastered.onrender.com/users/me', {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
