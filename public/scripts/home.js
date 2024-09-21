@@ -189,6 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       document.querySelector('.js-receiver-name').innerHTML = user.name;
+      socket.emit('fetchLastSeen', { userId: user._id })
 
       const sortedChatObj = await loadChat(response._id, receiverId)
       const sortedChat = sortedChatObj.sortedChat.reverse();
@@ -220,8 +221,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       document.querySelector('.js-send-message').addEventListener('click', () => {
         const timeSended = new Date().toString().replace('GMT+0530 (India Standard Time)', '')
-        const message = document.querySelector('.js-message-input').value || '.';
-        document.querySelector('.js-send-message').setAttribute('disabled', 'disabled')
+        const message = document.querySelector('.js-message-input').value;
+        if (message === '') {
+          return document.querySelector('.js-send-message').setAttribute('disabled', 'disabled')
+        }
 
         socket.emit('message', {
           senderId: response._id,
@@ -231,7 +234,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Optionally add the message to the chat container immediately
         chatContainer.innerHTML += `
           <div class="flex justify-end">
-            <div class="bg-gray-700 rounded-lg p-2 max-w-xs flex flex-col items-start">
+            <div class="bg-blue-500 rounded-lg p-2 max-w-xs flex flex-col items-start">
                 <p>${message}</p>
                 <p class="text-xsm text-gray-300">${timeSended}</p>
               </div>
@@ -240,7 +243,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Clear input after sending
         document.querySelector('.js-message-input').value = '';
-        document.querySelector('.js-send-message').removeAttribute('disabled')
+        setTimeout(() => {
+          document.querySelector('.js-send-message').removeAttribute('disabled')
+        }, 2000);
       });
 
       document.querySelector('.js-message-input').addEventListener('keydown', (event) => {
@@ -257,7 +262,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           // Optionally add the message to the chat container immediately
           chatContainer.innerHTML += `
             <div class="flex justify-end">
-              <div class="bg-gray-700 rounded-lg p-2 max-w-xs flex flex-col items-start">
+              <div class="bg-blue-500 rounded-lg p-2 max-w-xs flex flex-col items-start">
                 <p>${message}</p>
                 <p class="text-xsm text-gray-300">${timeSended}</p>
               </div>
@@ -290,6 +295,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     });
   });
+
+  socket.on('lastSeen', ({lastSeen}) => {
+    document.querySelector('.js-last-seen').innerHTML = `${ lastSeen === 'Online' ? 'Online' : `Last seen ${findMessageTime(lastSeen)}` }`;
+  })
 });
 
 async function findUser(userId) {

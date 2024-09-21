@@ -5,6 +5,7 @@ const userRouter = require('./routers/user.js');
 const chatRouter = require('./routers/chat.js');
 const http = require('http');
 const Chat = require('./models/chat.js');
+const User = require('./models/user.js')
 const socketIo = require('socket.io');
 
 const app = express();
@@ -50,6 +51,15 @@ io.on('connection', (socket) => {
     io.emit('onlineUsers', Array.from(onlineUsers));
   });
 
+  socket.on('fetchLastSeen', async ({userId}) => {
+    const user = await User.findById(userId)
+    if (Array.from(onlineUsers).includes(userId)) {
+      socket.emit('lastSeen', { lastSeen: 'Online' });
+    } else if (user && user.lastSeen) {
+      socket.emit('lastSeen', { lastSeen: user.lastSeen });
+    }
+  })
+
 
   // Handle incoming messages
   socket.on('message', async (message) => {
@@ -80,13 +90,15 @@ io.on('connection', (socket) => {
   });
 
   // Handle disconnection
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     for (let userId in userSocketMap) {
       if (userSocketMap[userId] === socket.id) {
         delete userSocketMap[userId];
         onlineUsers.delete(userId);
         console.log(`User ${userId} disconnected`);
         io.emit('onlineUsers', Array.from(onlineUsers));
+        const user = await User.findByIdAndUpdate(userId, { lastSeen: new Date() })
+        await user.save()
         break;
       }
     }

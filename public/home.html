@@ -29,14 +29,17 @@
     <!-- Main chat area -->
     <div class="flex-1 md:flex hidden js-chat-content flex-col">
       <!-- Chat header -->
-      <div class="p-4 border-b border-gray-700 flex items-center space-x-3">
+      <div class="p-4 border-b border-gray-700 flex items-center relative space-x-3">
         <svg class="font-bold size-6 md:hidden js-back-button" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
         </svg>   
         <div class="js-receiver-avatar-container">
           
         </div>
-        <h2 class="text-xl font-bold js-receiver-name">CHAT APP</h2>
+        <div class="flex flex-col">
+          <h2 class="text-xl font-bold js-receiver-name">CHAT APP</h2>
+          <p class="text-sm text-gray-300 js-last-seen"></p>
+        </div>
       </div>
 
       <!-- Chat messages -->

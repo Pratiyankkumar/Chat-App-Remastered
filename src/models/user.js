@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema({
   }],
   avatar: {
     type: Buffer
+  },
+  lastSeen: {
+    type: Date,
+    default: Date.now()
   }
 })
 
