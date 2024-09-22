@@ -4,7 +4,7 @@ import relativeTime from 'https://unpkg.com/dayjs@1.11.13/esm/plugin/relativeTim
 const token = localStorage.getItem('token');
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const request = await fetch('http://localhost:3000/users/me', {
+  const request = await fetch('https://chat-app-remastered.onrender.com/users/me', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.querySelector('.js-logout-button').addEventListener('click', async () => {
-    const logoutRequest = await fetch('http://localhost:3000/users/me/logout', {
+    const logoutRequest = await fetch('https://chat-app-remastered.onrender.com/users/me/logout', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.href = '/profile'
   })
 
-  const usersRequest = await fetch('http://localhost:3000/users', {
+  const usersRequest = await fetch('https://chat-app-remastered.onrender.com/users', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function findUser(userId) {
-  const usersRequest = await fetch(`http://localhost:3000/user/${userId}`, {
+  const usersRequest = await fetch(`https://chat-app-remastered.onrender.com/user/${userId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
@@ -314,7 +314,7 @@ async function findUser(userId) {
 }
 
 async function loadChat(senderId, receiverId) {
-  const senderschatRequest = await fetch(`http://localhost:3000/messages/${senderId}/${receiverId}`, {
+  const senderschatRequest = await fetch(`https://chat-app-remastered.onrender.com/messages/${senderId}/${receiverId}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -322,7 +322,7 @@ async function loadChat(senderId, receiverId) {
     }
   });
 
-  const receiverschatRequest = await fetch(`http://localhost:3000/messages/${receiverId}/${senderId}`, {
+  const receiverschatRequest = await fetch(`https://chat-app-remastered.onrender.com/messages/${receiverId}/${senderId}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
