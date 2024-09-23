@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <p class="font-semibold">${user.name}</p>
               <img class="w-3 h-3 ml-4 js-online-tag-${user._id} hidden" src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Location_dot_green.svg"></img>
             </div>
-            <p class="text-sm text-gray-400">${chatContent.slice(0, 20)} · ${findElapsedTime(createdAt) ? `${findElapsedTime(createdAt)} ago` : ''}</p>
+            <p class="text-sm text-gray-400">${chatContent.slice(0, 20) } · ${findElapsedTime(createdAt) ? `${findElapsedTime(createdAt)} ago` : ''}</p>
           </div>
         </div>
       `;
@@ -167,6 +167,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       })
 
       const receiverId = selectUserButton.dataset.userId;
+      socket.emit('userOpenedChat', {userId: response._id, receiverId})
       localStorage.setItem('receiverId', receiverId)
       console.log(receiverId)
       const user = await findUser(receiverId);
@@ -204,9 +205,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (chat.senderId === response._id) {
           chatContainer.innerHTML += `
             <div class="flex justify-end">
-              <div class="bg-blue-500 rounded-lg p-2 max-w-xs flex flex-col items-end">
+              <div class="bg-chat-background rounded-lg p-2 max-w-xs flex flex-col items-end">
                 <p>${chat.content}</p>
-                <p class="text-xsm text-gray-300">${findMessageTime(chat.createdAt)}</p>
+                <div class="flex flex-row items-center">
+                  <p class="text-xsm text-gray-300">${findMessageTime(chat.createdAt)}</p>
+                  <img src="images/${chat.status === 'sent' ? 'single-tick.svg' : chat.status === 'delivered' ? 'white-double-tick.svg' : chat.status === 'read' ? 'blue-double-tick.svg' : ''}" class="size-4 ml-1" />
+                </div>
               </div>
             </div>
           `;
@@ -237,14 +241,17 @@ document.addEventListener('DOMContentLoaded', async () => {
           content: message
         });
         // Optionally add the message to the chat container immediately
-        chatContainer.innerHTML += `
-          <div class="flex justify-end">
-            <div class="bg-blue-500 rounded-lg p-2 max-w-xs flex flex-col items-start">
-                <p>${message}</p>
-                <p class="text-xsm text-gray-300">${timeSended}</p>
-              </div>
-          </div>
-        `;
+        // chatContainer.innerHTML += `
+        //   <div class="flex justify-end">
+        //     <div class="bg-chat-background rounded-lg p-2 max-w-xs flex flex-col items-start">
+        //         <p>${message}</p>
+        //         <div class="flex flex-row items-center">
+        //           <p class="text-xsm text-gray-300">${timeSended}</p>
+        //           <img src="images/single-tick.svg" class="size-4 ml-1" />
+        //         </div>
+        //       </div>
+        //   </div>
+        // `;
 
         // Clear input after sending
         document.querySelector('.js-message-input').value = '';
@@ -269,14 +276,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             content: message
           });
           // Optionally add the message to the chat container immediately
-          chatContainer.innerHTML += `
-            <div class="flex justify-end">
-              <div class="bg-blue-500 rounded-lg p-2 max-w-xs flex flex-col items-start">
-                <p>${message}</p>
-                <p class="text-xsm text-gray-300">${timeSended}</p>
-              </div>
-            </div>
-          `;
+          // chatContainer.innerHTML += `
+          //   <div class="flex justify-end">
+          //     <div class="bg-chat-background rounded-lg p-2 max-w-xs flex flex-col items-start">
+          //       <p>${message}</p>
+          //       <div class="flex flex-row items-center">
+          //         <p class="text-xsm text-gray-300">${timeSended}</p>
+          //         <img src="images/single-tick.svg" class="size-4 ml-1" />
+          //       </div>
+          //     </div>
+          //   </div>
+          // `;
 
           // Clear input after sending
           document.querySelector('.js-message-input').value = '';
@@ -288,13 +298,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Listen for incoming messages
       socket.on('displayMessage', (message) => {
-        const time = new Date().toString().replace('GMT+0530 (India Standard Time)', '')
         if (message.senderId === receiverId || message.receiverId === receiverId) {
           chatContainer.innerHTML += `
             <div class="flex ${message.senderId === response._id ? 'justify-end' : 'justify-start'}">
-              <div class="bg-gray-700 rounded-lg p-2 max-w-xs flex flex-col items-start">
+              <div class="${message.senderId === response._id ? 'bg-chat-background' : 'bg-gray-700'} rounded-lg p-2 max-w-xs flex flex-col items-start">
                 <p>${message.content}</p>
-                <p class="text-xsm text-gray-300">${time}</p>
+                <div class="flex flex-row items-center">
+                  <p class="text-xsm text-gray-300">${findMessageTime(message.createdAt)}</p>
+                  <img src="images/${message.status === 'sent' ? 'single-tick.svg' : message.status === 'delivered' ? 'white-double-tick.svg' : message.status === 'read' ? 'blue-double-tick.svg' : ''}" class=" ${message.senderId === response._id ? 'flex' : 'hidden'}  size-4 ml-1" />
+                </div>
               </div>
             </div>
           `;

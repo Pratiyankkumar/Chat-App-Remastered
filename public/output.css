@@ -660,6 +660,14 @@ video {
   margin-top: 1rem;
 }
 
+.ml-3 {
+  margin-left: 0.75rem;
+}
+
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
 .block {
   display: block;
 }
@@ -680,6 +688,16 @@ video {
 .size-8 {
   width: 2rem;
   height: 2rem;
+}
+
+.size-3 {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.size-4 {
+  width: 1rem;
+  height: 1rem;
 }
 
 .h-10 {
@@ -932,6 +950,11 @@ video {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-chat-background {
+  --tw-bg-opacity: 1;
+  background-color: rgb(6 72 62 / var(--tw-bg-opacity));
 }
 
 .object-cover {

@@ -60,6 +60,16 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('userOpenedChat', async ({userId, receiverId}) => {
+    console.log(`A user ${userId} has opened chat with ${receiverId}`)
+    const chats = await Chat.find({senderId: receiverId, receiverId: userId})
+
+    for (const chat of chats) {
+      chat.status = 'read'
+      await chat.save()
+    }
+  })
+
 
   // Handle incoming messages
   socket.on('message', async (message) => {
@@ -68,18 +78,24 @@ io.on('connection', (socket) => {
         senderId: message.senderId,
         receiverId: message.receiverId,
         content: message.content,
-        status: 'sent'
+        status: Array.from(onlineUsers).includes(message.receiverId) ? 'delivered' : 'sent'
       });
   
       const savedMessage = await chatMessage.save();
-      console.log(savedMessage)
 
       // Find the receiver's socket ID
       const receiverSocketId = userSocketMap[message.receiverId]; 
+      const senderSocketId = userSocketMap[message.senderId]
       
       if (receiverSocketId) {
         // Emit the message to the receiver's socket
         io.to(receiverSocketId).emit('displayMessage', savedMessage);
+      } else {
+        console.log(`No active connection for user ${message.receiverId}`);
+      }
+
+      if (senderSocketId) {
+        io.to(senderSocketId).emit('displayMessage', savedMessage)
       } else {
         console.log(`No active connection for user ${message.receiverId}`);
       }
