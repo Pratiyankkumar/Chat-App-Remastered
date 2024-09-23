@@ -71,21 +71,22 @@ io.on('connection', (socket) => {
         status: 'sent'
       });
   
-      await chatMessage.save();
+      const savedMessage = await chatMessage.save();
+      console.log(savedMessage)
+
+      // Find the receiver's socket ID
+      const receiverSocketId = userSocketMap[message.receiverId]; 
+      
+      if (receiverSocketId) {
+        // Emit the message to the receiver's socket
+        io.to(receiverSocketId).emit('displayMessage', savedMessage);
+      } else {
+        console.log(`No active connection for user ${message.receiverId}`);
+      }
   
       
     } catch (error) {
       console.log({error: error.message})
-    }
-
-    // Find the receiver's socket ID
-    const receiverSocketId = userSocketMap[message.receiverId]; 
-    
-    if (receiverSocketId) {
-      // Emit the message to the receiver's socket
-      io.to(receiverSocketId).emit('displayMessage', message);
-    } else {
-      console.log(`No active connection for user ${message.receiverId}`);
     }
   });
 

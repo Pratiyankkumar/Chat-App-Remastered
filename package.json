@@ -10,7 +10,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "A real-time chat application that allows users to communicate with each other, featuring login, CRUD operations, and integration with Socket.io for instant messaging.",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "dayjs": "^1.11.13",
