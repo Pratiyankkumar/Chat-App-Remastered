@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const chatArray = chat.sortedChatReverse || [];
       const chatContent = chatArray.length > 0 && chatArray[0].content ? chatArray[0].content : ' ';
       const createdAt = chatArray.length > 0 && chatArray[0].createdAt ? chatArray[0].createdAt : ' ';
+      const chatRecentArray = chatArray.length > 0 && chatArray[0] ? chatArray[0] : [];
       usersListHTML += `
         <div class="flex items-center space-x-3 js-message-user cursor-pointer duration-200 ease-in-out hover:bg-slate-800 p-2 rounded-md" data-user-id="${user._id}">
           <div class="js-user-avatar-container-${user._id}">
@@ -104,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <p class="font-semibold">${user.name}</p>
               <img class="w-3 h-3 ml-4 js-online-tag-${user._id} hidden" src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Location_dot_green.svg"></img>
             </div>
-            <p class="text-sm text-gray-400">${chatContent.slice(0, 20) } · ${findElapsedTime(createdAt) ? `${findElapsedTime(createdAt)} ago` : ''}</p>
+            <p class="text-sm js-recent-message-${user._id} ${(chatRecentArray.status === 'sent' && chatRecentArray.senderId !== response._id)  || (chatRecentArray.status === 'delivered' && chatRecentArray.senderId !== response._id) ? 'font-bold text-white' : 'font-normal' } text-gray-400">${chatContent.slice(0, 20) } · ${findElapsedTime(createdAt) ? `${findElapsedTime(createdAt)} ago` : ''}</p>
           </div>
         </div>
       `;
@@ -156,6 +157,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.js-message-user').forEach((selectUserButton) => {
     selectUserButton.addEventListener('click', async () => {
 
+
+
       if (window.innerWidth < 760) {
         document.querySelector('.js-users-container').classList.add('hidden')
         document.querySelector('.js-chat-content').classList.remove('hidden')
@@ -167,6 +170,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       })
 
       const receiverId = selectUserButton.dataset.userId;
+
+      document.querySelector(`.js-recent-message-${receiverId}`).classList.remove('font-bold', 'text-white')
+
       socket.emit('userOpenedChat', {userId: response._id, receiverId})
       localStorage.setItem('receiverId', receiverId)
       console.log(receiverId)
