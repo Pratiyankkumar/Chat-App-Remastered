@@ -232,6 +232,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       });
 
+      
+      socket.off('displayMessage');
+
       document.querySelector('.js-send-message').addEventListener('click', () => {
         const timeSended = new Date().toString().replace('GMT+0530 (India Standard Time)', '')
         const message = document.querySelector('.js-message-input').value;
@@ -265,6 +268,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           document.querySelector('.js-send-message').removeAttribute('disabled')
         }, 2000);
       });
+
+      
+      socket.off('displayMessage');
 
       document.querySelector('.js-message-input').addEventListener('keydown', (event) => {
         const timeSended = new Date().toString().replace('GMT+0530 (India Standard Time)', '')
